@@ -8,42 +8,22 @@ from config import configs
 
 
 class OCRLogger:
-    def __init__(self, conf_file: str) -> None:
+    def __init__(self, conf_file: str = configs.DIR_CONFIG.LOG_CONFIG_FILE) -> None:
         """
         Initializes an instance of OCRLogger.
 
         Args:
-            conf_file (str): Path to the log configuration file. Defaults to LOG_CONFIG_FILE.
-        """
-        self._update_log_config(conf_file)
-        self._initialize_logger(conf_file)
-
-    def _update_log_config(self, conf_file: str) -> None:
-        """
-        Updates the log configuration file with the correct log file path.
-
-        Args:
-            conf_file (str): Path to the log configuration file.
+            config_file (str): Path to the log configuration file. Defaults to LOG_CONFIG_FILE.
         """
         dirname = os.path.dirname(__file__)
         with open(conf_file) as config_file:
             config = yaml.safe_load(config_file)
-            config['handlers']['file']['filename'] = os.path.join(dirname, configs.dir_configs.LOG_FILE)
+        config['handlers']['file']['filename'] = os.path.join(dirname, configs.DIR_CONFIG.LOG_FILE)
         with open(conf_file, 'w') as config_file:
             yaml.dump(config, config_file)
 
-    def _initialize_logger(self, conf_file: str) -> None:
-        """
-        Configures the logger using the updated configuration.
-
-        Assumes that the configuration file has been updated.
-
-        Sets the logger name based on the calling function.
-        """
-        config = yaml.safe_load(open(conf_file))
-        logging.config.dictConfig(config)
-        logger_name = inspect.stack()[1][3]
-        self.logger = logging.getLogger(logger_name)
+        self.logger = logging.config.dictConfig(config)
+        self.logger = logging.getLogger('xero_logger')
 
     def log_debug(self, message: str) -> None:
         """
@@ -91,4 +71,5 @@ class OCRLogger:
         self.logger.critical(message)
 
 
-logger = OCRLogger(conf_file=configs.dir_configs.LOG_CONFIG_FILE)
+
+logger = OCRLogger()

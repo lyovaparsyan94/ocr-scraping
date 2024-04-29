@@ -9,7 +9,7 @@ handlers:
     level: INFO
   file:
     class: logging.FileHandler
-    filename: logs.log
+    filename: C:\Users\parsy\OneDrive\Desktop\DOT\ocr-scraping\src\logs\logs.log
     formatter: standard
     level: WARNING
 root:
