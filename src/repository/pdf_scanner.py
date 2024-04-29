@@ -1,6 +1,7 @@
 import os
 from os.path import join
 
+from logs.ocr_logger import logger
 from pdf2image import convert_from_path
 from pytesseract import pytesseract
 from repository.file_repository import FileRepository
@@ -29,7 +30,7 @@ class PDFScannerUseCase:
         for page_num, imgblob in enumerate(pages, start=1):
             scanned_text = pytesseract.image_to_string(imgblob, lang='eng')
             pdf_data[pdf_name][str(page_num)] = scanned_text
-            print(f' - processing page {page_num} / {len(pages)}')
+            logger.log_info(f' - processing page {page_num} / {len(pages)}')
         self.filehandler.save_data(data=pdf_data, filename=filename)
 
     def scan_all_pdfs(self) -> None:
@@ -41,9 +42,9 @@ class PDFScannerUseCase:
         """
         pdfs = self.get_pdfs_dir()
         count_of_files = len(pdfs)
-        print(f"get total {count_of_files} files ")
+        logger.log_info(f"get total {count_of_files} files ")
         for counter, pdf in enumerate(pdfs, start=1):
-            print(f'converting  {counter} / {len(pdfs)} file: {pdf}')
+            logger.log_info(f'converting  {counter} / {len(pdfs)} file: {pdf}')
             if pdf.lower().endswith('.pdf'):
                 pdf_name = pdf
                 pdf = join(configs.DIR_CONFIG.INITIAL_DATA_DIR, pdf)
