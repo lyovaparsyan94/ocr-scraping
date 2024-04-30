@@ -39,3 +39,17 @@ class AbstractFileRepository(ABC):
             filename (str, optional): Path to the data file.
         """
         pass
+
+    @abstractmethod
+    def get_files_dir(self, pdfs_dir: str, abspath: bool = False) -> list[str]:
+        """
+        Retrieves a list of all files in the specified directory.
+
+        Args:
+            pdfs_dir (str): Directory containing files.
+            abspath (bool, optional): Return absolute paths. Defaults to False.
+
+        Returns:
+            List[str]: List of filenames.
+        """
+        pass

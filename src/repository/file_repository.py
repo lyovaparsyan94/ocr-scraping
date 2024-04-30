@@ -1,5 +1,8 @@
 import json
+import os
+from os.path import join
 
+from config import configs
 from repository.abc_pdf_scan_repository import AbstractFileRepository
 
 
@@ -55,3 +58,20 @@ class FileRepository(AbstractFileRepository):
             raise FileNotFoundError(f"File '{filename}' not found.")
         except json.JSONDecodeError:
             raise ValueError(f"Error decoding JSON data from '{filename}'. Check the file format.")
+
+    def get_files_dir(self, file_dir: str = configs.DIR_CONFIG.INITIAL_DATA_DIR, abspath: bool = False) -> list[str]:
+        """
+        Retrieves a list of all files in the specified directory.
+
+        Args:
+            file_dir (str, optional): Directory containing files. Defaults to INITIAL_DATA_DIR.
+            abspath (bool, optional): Return absolute paths. Defaults to False.
+
+        Returns:
+            List[str]: List of filenames.
+        """
+        files = os.listdir(file_dir)
+        if abspath:
+            files_abspath = [join(configs.DIR_CONFIG.INITIAL_DATA_DIR, pdf) for pdf in files]
+            return files_abspath
+        return files

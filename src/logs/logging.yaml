@@ -1,20 +1,28 @@
 formatters:
-  standard:
-    datefmt: '%Y-%m-%d %H:%M:%S'
-    format: '%(asctime)s - %(levelname)s - %(filename)s - %(message)s'
+  simple:
+    datefmt: '%m-%d %H:%M:%S'
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 handlers:
   console:
     class: logging.StreamHandler
-    formatter: standard
+    formatter: simple
     level: INFO
   file:
     class: logging.FileHandler
-    filename: C:\Users\parsy\OneDrive\Desktop\DOT\ocr-scraping\src\logs\logs.log
-    formatter: standard
+    filename: logs\logs.log
+    formatter: simple
+    level: WARNING
+loggers:
+  development:
+    handlers:
+    - console
+    level: INFO
+  production:
+    handlers:
+    - file
     level: WARNING
 root:
   handlers:
   - console
-  - file
-  level: INFO
+  level: DEBUG
 version: 1

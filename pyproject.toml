@@ -12,6 +12,7 @@ pydantic-settings = "^2.2.1"
 pytesseract = "^0.3.10"
 pdf2image = "^1.17.0"
 pyyaml = "^6.0.1"
+gevent = "^24.2.1"
 
 
 [build-system]
