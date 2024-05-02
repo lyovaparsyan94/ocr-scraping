@@ -14,26 +14,28 @@ class PDFScannerUseCase:
     def __init__(self):
         self.filehandler = FileRepository()
 
-    def scan_pdf(self, pdf_file: str, pdf_name: str) -> None:
+    def scan_pdf(self, pdf_file: str, pdf_name: str, save_txt: bool = True) -> None:
         """
         Scans a PDF file and extracts text from each page.
 
         Args:
             pdf_file (str): Path to the input PDF file.
             pdf_name (str): Name of the PDF.
+            save_txt(bool): save txt version of scanned text
 
         Returns:
             None: Saves the extracted text to a JSON file.
         """
-        pdf_data = {pdf_name: {}}
+        pdf_data = {}
         pages = convert_from_path(pdf_file, 500)
         json_filename = join(configs.DIR_CONFIG.OUTPUT_DATA_DIR, f'{pdf_name[:-4]}.json')
         for page_num, imgblob in enumerate(pages, start=1):
             scanned_text = pytesseract.image_to_string(imgblob, lang='eng')
-            pdf_data[pdf_name][str(page_num)] = scanned_text
+            pdf_data[str(page_num)] = scanned_text
             logger.info(f' - processing page {page_num} / {len(pages)}')
             txt_filename = join(configs.DIR_CONFIG.OUTPUT_DATA_DIR, f'{pdf_name[:-4]}{page_num}.txt')
-            self.filehandler.create_file(filename=txt_filename, text=scanned_text)
+            if save_txt:
+                self.filehandler.create_file(filename=txt_filename, text=scanned_text)
         self.filehandler.save_data(filename=json_filename, data=pdf_data)
 
     def scan_all_pdfs(self) -> None:

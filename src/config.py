@@ -18,8 +18,25 @@ class DirConfigs(BaseSettings):
     LOG_CONFIG_FILE: str = join(LOGS_DIR, 'logging.yaml')
 
 
+class PatternConfigs(BaseSettings):
+    PATIENT_PATTERN: str = r"Mr\s+(\w+\s+\w+)"
+    PATIENT_PATTERN_LIST: list = [r"Mr\s+[A-Za-z]+\s+[A-Za-z]+", r"Mr\s+(\w+\s+\w+)", ]
+    PATIENT_STOPWORDS: list = ['Ms ', 'Mr ', 'MR ', 'Mr', 'MR', 'Ms', 'MS', 'MS ', 'Ms. ', 'Mr. ', 'MR. ', 'Mr.', 'MR.',
+                               'Ms.', 'MS.', 'MS. ', ]
+    DOCTOR_PATTERN: str = r"Dr\s+(\w+\s+\w+)"
+    DOCTOR_PATTERN_LIST: list = [
+        # r"Dr\s+(\w+\s+\w+)", r"A/PROF\s+(\w+\s+\w+)",
+        # r"Dr\s+[A-Za-z]+\s+[A-Za-z]+",
+        # r'Dr\s+[A-Z][a-z]+(?:-[A-Z][a-z]+)?',
+        # r'Dr\s+[A-Z][a-z]+(?:-[A-Z][a-z]+)?(?:\s+[A-Z][a-z]+)?',
+        r'Dr\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:-[A-Z][a-z]+)?',
+    ]
+    DOCTOR_STOPWORDS: list = ['DR. ', 'Dr. ', 'Dr.', 'DR.', 'DR ', 'Dr ', 'Dr', 'DR', ]
+
+
 class Config(BaseSettings):
     DIR_CONFIG: DirConfigs = DirConfigs()
+    PATTERNS: PatternConfigs = PatternConfigs()
 
 
 configs = Config()
