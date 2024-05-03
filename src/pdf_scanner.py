@@ -1,7 +1,7 @@
-import time
-from os.path import join
-
+from gevent import monkey  # noqa:  E402
+monkey.patch_all()  # noqa:  E402
 import gevent
+from os.path import join
 from logs.logger import logger
 from pdf2image import convert_from_path
 from pytesseract import pytesseract
@@ -11,8 +11,8 @@ from src.config import configs
 
 
 class PDFScannerUseCase:
-    def __init__(self):
-        self.filehandler = FileRepository()
+    def __init__(self, filehandler_instance: FileRepository):
+        self.filehandler = filehandler_instance
 
     def scan_pdf(self, pdf_file: str, pdf_name: str, save_txt: bool = True) -> None:
         """
@@ -45,27 +45,16 @@ class PDFScannerUseCase:
         Returns:
             None: Saves extracted text for all PDFs.
         """
-        start = time.time()
-        pdfs = self.filehandler.get_files_dir()
+        pdfs = self.filehandler.get_files_dir(configs.DIR_CONFIG.INITIAL_DATA_DIR)
         for counter, pdf in enumerate(pdfs, start=1):
             logger.info(f'scanning {counter} / {len(pdfs)} files: current - {pdf}')
             if pdf.lower().endswith('.pdf'):
                 pdf_name = pdf
                 pdf = join(configs.DIR_CONFIG.INITIAL_DATA_DIR, pdf)
                 self.scan_pdf(pdf_file=pdf, pdf_name=pdf_name)
-        end = time.time()
-        logger.info(f'Done in {end - start} secs')
 
     def scan_all_pdfs_gevent(self) -> None:
-        start = time.time()
-        pdfs = self.filehandler.get_files_dir()
+        pdfs = self.filehandler.get_files_dir(configs.DIR_CONFIG.INITIAL_DATA_DIR)
         jobs = [gevent.spawn(self.scan_pdf, join(configs.DIR_CONFIG.INITIAL_DATA_DIR, pdf), pdf) for pdf in pdfs if
                 pdf.lower().endswith('.pdf')]
         gevent.joinall(jobs)
-        end = time.time()
-        logger.info(f'GEVENT: Done in {end - start} secs')
-
-
-pdf_scanner = PDFScannerUseCase()
-pdf_scanner.scan_all_pdfs()
-# pdf_scanner.scan_all_pdfs_gevent()

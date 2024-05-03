@@ -8,9 +8,9 @@ from repository.file_repository import FileRepository
 
 
 class TextAnalyzer:
-    def __init__(self):
+    def __init__(self, filehandler_instance: FileRepository):
         self.full_text = ''
-        self.filehandler = FileRepository()
+        self.filehandler = filehandler_instance
         self.doc_pattern = configs.PATTERNS.DOCTOR_PATTERN
         self.doc_patterns = configs.PATTERNS.DOCTOR_PATTERN_LIST
         self.patient_pattern = configs.PATTERNS.PATIENT_PATTERN
@@ -167,7 +167,3 @@ class TextAnalyzer:
             if longest_word not in resul_dict:
                 resul_dict[longest_word] = similar_names_dict[key]
         return resul_dict
-
-
-textanalyzer = TextAnalyzer()
-textanalyzer.analyze_files()
