@@ -2,7 +2,6 @@ import json
 import os
 from os.path import join
 
-from config import configs
 from repository.abc_pdf_scan_repository import AbstractFileRepository
 
 

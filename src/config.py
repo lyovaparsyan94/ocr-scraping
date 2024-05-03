@@ -25,13 +25,12 @@ class PatternConfigs(BaseSettings):
                                'Ms.', 'MS.', 'MS. ', ]
     DOCTOR_PATTERN: str = r"Dr\s+(\w+\s+\w+)"
     DOCTOR_PATTERN_LIST: list = [
-        # r"Dr\s+(\w+\s+\w+)", r"A/PROF\s+(\w+\s+\w+)",
-        # r"Dr\s+[A-Za-z]+\s+[A-Za-z]+",
-        # r'Dr\s+[A-Z][a-z]+(?:-[A-Z][a-z]+)?',
-        # r'Dr\s+[A-Z][a-z]+(?:-[A-Z][a-z]+)?(?:\s+[A-Z][a-z]+)?',
+        r"A/PROF\s+(\w+\s+\w+)",
+        r"([A-Z][a-z]+ [A-Z][a-z]+) \(Prov",
         r'Dr\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:-[A-Z][a-z]+)?',
     ]
     DOCTOR_STOPWORDS: list = ['DR. ', 'Dr. ', 'Dr.', 'DR.', 'DR ', 'Dr ', 'Dr', 'DR', ]
+    DOCTOR_KEYWORDS: list = ['dr', 'prof', 'prov.', ]
 
 
 class Config(BaseSettings):
