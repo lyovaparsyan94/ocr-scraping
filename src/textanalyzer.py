@@ -20,24 +20,44 @@ class TextAnalyzer:
         text = ''
         for page in data:
             text += data[page]
-        return text
+        self.full_text = text
+
+    def is_max_occurred_name(self, names):
+        max_value = max(names, key=names.get)
+        limit = names[max_value]
+        for name in names:
+            if names[name] != limit:
+                logger.info(f"NOT all values equal, {name} {names[name]} times occurred, {max_value}'s {limit} times")
+                return True
+        return False
+
+    def find_percentage_in_text(self, text, names):
+        for name in names:
+            index = text.find(name)
+            txt = (index + (len(name)))
+            if index != -1:
+                percent = (txt / len(text)) * 100
+                logger.info(f'{name} found at the {percent} %')
 
     def analyze_file(self, filename, file_path):
         data = self.filehandler.read_json_file(file_path)
-        self.full_text = self.get_full_text(data)
+        self.get_full_text(data)
         prepared_text = self.prepare_text()
         doctors = self.use_pattern(prepared_text, pattern_name='doctors')
         doctors_cleaned = self.extract_clean_names(names=doctors, list_name='doctors',
                                                    stopwords=configs.PATTERNS.DOCTOR_STOPWORDS)
         if doctors_cleaned:
             doctors_duplicated = self.save_duplicated_names(names=doctors_cleaned, list_name='doctors duplicated')
-            logger.info(f"MAIN doctor: {max(doctors_duplicated, key=doctors_duplicated.get)}")
+            if self.is_max_occurred_name(doctors_duplicated):
+                ...
+
         else:
             logger.info("MAIN doctor NOT FOUND")
 
     def save_duplicated_names(self, names, list_name):
         optimised_duplicates = self.get_similar_names(names)
         full_text = self.full_text.replace('\n\n', '\n')
+        # self.find_percentage_in_text(self.full_text, names)
         duplicated_names = {}
         for name in optimised_duplicates:
             for doctor in optimised_duplicates[name]:
@@ -46,7 +66,6 @@ class TextAnalyzer:
                         duplicated_names[name] = full_text.lower().count(doctor.lower())
                     else:
                         duplicated_names[name] += full_text.lower().count(doctor.lower())
-
         logger.info(f"{list_name}: {duplicated_names}")
         return duplicated_names
 
@@ -54,6 +73,7 @@ class TextAnalyzer:
         files = self.filehandler.get_files_dir(file_dir=configs.DIR_CONFIG.OUTPUT_DATA_DIR, with_abspath=True)
         counter = 1
         for filename, filepath in files.items():
+            # if filename == 'ANATPATH.json':
             logger.info(f"scanning {filename}")
             self.analyze_file(filename=filename, file_path=filepath)
             logger.info(f"scanned {counter} / {len(files)}, file: {filename}\n")
@@ -68,7 +88,7 @@ class TextAnalyzer:
                     name = name.replace(stopword, '')
                 result.append(name)
             result = self.extract_full_names(result)
-            logger.info(f'extracted {list_name}: length {len(result)} {result}')
+            logger.info(f'in "{list_name}" extracted {len(result)} names')
             return result
         logger.info(f"in '{list_name}' not found names")
 
@@ -80,7 +100,7 @@ class TextAnalyzer:
                 for value in values:
                     names.append(value)
             names = list(set(names))
-        logger.info(f"pattern used: length - {len(names)}")
+        logger.info(f"in {pattern_name} found {len(names)} names")
         return names
 
     def remove_substrings(self, names):
@@ -160,10 +180,12 @@ class TextAnalyzer:
             for key, value in similar_names_dict.items():
                 similar_names_dict[key] = [str(key)]
             return similar_names_dict
-        similar_names_dict = {key: value for key, value in similar_names_dict.items() if value}
-        resul_dict = {}
+        result_dict = {}
         for key in similar_names_dict:
+            similar_names_dict[key].append(key)
+            similar_names_dict[key] = list(set(similar_names_dict[key]))
             longest_word = max(similar_names_dict[key])
-            if longest_word not in resul_dict:
-                resul_dict[longest_word] = similar_names_dict[key]
-        return resul_dict
+            if longest_word not in result_dict:
+                result_dict[longest_word] = similar_names_dict[key]
+        logger.info(f"similar_names_dict: {result_dict}")
+        return result_dict

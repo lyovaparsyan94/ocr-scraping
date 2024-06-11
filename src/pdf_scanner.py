@@ -1,5 +1,5 @@
 from gevent import monkey  # noqa:  E402
-monkey.patch_all()  # noqa:  E402
+monkey.patch_all()         # noqa:  E402
 import gevent
 from os.path import join
 from logs.logger import logger
